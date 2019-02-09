@@ -65,8 +65,6 @@ def _print_results(solution):
         tab.add_row(row)
     s = tab.draw()
     print(s)
-    pass
-
 
 if __name__ == '__main__':
     origami_solution = _solve_game_using_ori_MILP()
