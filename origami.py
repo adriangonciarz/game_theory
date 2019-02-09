@@ -91,7 +91,7 @@ class Origami:
                     / (covered_payoff[t] - uncovered_payoff[t])
 
         # save the optimal coverage vector for the original target indices.
-        self.opt_coverage = np.zeros((self.num_targets))
+        self.opt_coverage = np.zeros((self.num_targets, 1))
         self.opt_coverage[sorted_targets] = coverage
 
         # save solution time without the overhead

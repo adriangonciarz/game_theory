@@ -8,7 +8,12 @@ from origami_milp import OrigamiMILP
 import time
 
 start = time.time()
-comp_game = SecurityGame(12, 10, 2)
+comp_game = SecurityGame(
+    num_targets=12,
+    max_coverage=10,
+    num_attacker_types=2
+)
+
 # norm_game = NormalFormGame(game=comp_game, harsanyi=False)
 # hars_game = NormalFormGame(game=norm_game)
 
