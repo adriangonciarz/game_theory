@@ -1,6 +1,7 @@
 import itertools
 import numpy as np
 
+
 class PatrolGame:
     """
     Class implementing the patrol game as specified
@@ -16,6 +17,7 @@ class PatrolGame:
     c_x[l]: security agent's reward for catching adversary of type l
     c_q[l]: Adversaries cost of getting caught when of type l
     """
+
     def __init__(self, m, d, num_attacker_types):
         # save args as instance variables
         self.m = m
@@ -42,7 +44,7 @@ class PatrolGame:
         # - generate pure attacker strategies
         self.Q = np.arange(m)
 
-        # save num of strategies
+        #  save num of strategies
         self.num_defender_strategies = len(self.X)
         self.num_attacker_strategies = len(self.Q)
 
@@ -51,18 +53,18 @@ class PatrolGame:
         # assuming linearity
         self.Pl = np.zeros(d)
         for index in range(len(self.Pl)):
-            self.Pl[index] = 1 - (float((index+1)) / (d+1))
+            self.Pl[index] = 1 - (float((index + 1)) / (d + 1))
         # - generate payoff matrices
         self.attacker_payoffs = np.ndarray(shape=(self.num_defender_strategies,
-                                                 self.num_attacker_strategies,
-                                                 self.num_attacker_types),
-                                          dtype=float
-                                          )
+                                                  self.num_attacker_strategies,
+                                                  self.num_attacker_types),
+                                           dtype=float
+                                           )
         self.defender_payoffs = np.ndarray(shape=(self.num_defender_strategies,
-                                                 self.num_attacker_strategies,
-                                                 self.num_attacker_types),
-                                          dtype=float
-                                          )
+                                                  self.num_attacker_strategies,
+                                                  self.num_attacker_types),
+                                           dtype=float
+                                           )
         for a in range(self.num_attacker_types):
             attacker_payoff = np.zeros((self.num_defender_strategies,
                                         self.num_attacker_strategies))
@@ -73,25 +75,25 @@ class PatrolGame:
                     if j in self.X[i]:
                         index = self.X[i].index(j)
                         p = self.Pl[index]
-                        attacker_payoff[i,j] = (p * -self.c_q[a]) + \
-                                                (1-p)*self.v_q[a, j]
-                        defender_payoff[i,j] = (p * self.c_x[a]) + \
-                                                ((1-p)*(-self.v_x[a,j]))
+                        attacker_payoff[i, j] = (p * -self.c_q[a]) + \
+                                                (1 - p) * self.v_q[a, j]
+                        defender_payoff[i, j] = (p * self.c_x[a]) + \
+                                                ((1 - p) * (-self.v_x[a, j]))
                     else:
-                        attacker_payoff[i,j] = self.v_q[a,j]
-                        defender_payoff[i,j] = -self.v_x[a,j]
+                        attacker_payoff[i, j] = self.v_q[a, j]
+                        defender_payoff[i, j] = -self.v_x[a, j]
 
             # normalize payoffs
             attacker_payoff -= np.amin(attacker_payoff)
             attacker_payoff = attacker_payoff / (np.amax(attacker_payoff) - \
-                                               np.amin(attacker_payoff))
+                                                 np.amin(attacker_payoff))
 
             defender_payoff -= np.amin(defender_payoff)
             defender_payoff = defender_payoff / (np.amax(defender_payoff) - \
-                                               np.amin(defender_payoff))
+                                                 np.amin(defender_payoff))
             # add to payoffs
-            self.attacker_payoffs[:,:,a] = attacker_payoff
-            self.defender_payoffs[:,:,a] = defender_payoff
+            self.attacker_payoffs[:, :, a] = attacker_payoff
+            self.defender_payoffs[:, :, a] = defender_payoff
 
         # generate probability distribution over adversaries
         # assume uniform distribution.
@@ -99,6 +101,7 @@ class PatrolGame:
         self.attacker_type_probability[:] = 1.0 / self.num_attacker_types
 
         self.type = "normal"
+
 
 class NormalFormGame:
     def __init__(self, **kwargs):
@@ -162,8 +165,6 @@ class NormalFormGame:
         self.attacker_payoffs = (self.attacker_payoffs * 200) - 100
         self.defender_payoffs = (self.defender_payoffs * 200) - 100
 
-
-
     def _compact_to_normal(self):
         """
         every possible comination of pure coverages is a defender strategy
@@ -175,11 +176,11 @@ class NormalFormGame:
         self.attacker_type_probability = self.game.attacker_type_probability
 
         # compute all possible defender strategies i.e. comb. of coverage
-        self.defender_coverage_tuples = list (
-                                    itertools.combinations(
-                                    range(self.game.num_targets),
-                                    self.game.max_coverage)
-                                    )
+        self.defender_coverage_tuples = list(
+            itertools.combinations(
+                range(self.game.num_targets),
+                self.game.max_coverage)
+        )
 
         self.num_defender_strategies = len(self.defender_coverage_tuples)
         self.num_attacker_strategies = self.game.num_targets
@@ -187,11 +188,11 @@ class NormalFormGame:
 
         # init payoff matrices
         self.defender_payoffs = np.zeros((self.num_defender_strategies,
-                                         self.game.num_targets,
-                                         self.game.num_attacker_types ))
+                                          self.game.num_targets,
+                                          self.game.num_attacker_types))
         self.attacker_payoffs = np.zeros((self.num_defender_strategies,
-                                         self.game.num_targets,
-                                         self.game.num_attacker_types ))
+                                          self.game.num_targets,
+                                          self.game.num_attacker_types))
 
         # calculate the appropriate payoffs
         for t in range(self.game.num_targets):
@@ -218,14 +219,14 @@ class NormalFormGame:
         # get dimensions of payoff matrices
         self.num_defender_strategies = self.game.num_defender_strategies
         self.num_attacker_strategies = self.game.num_attacker_strategies ** \
-                                        self.game.num_attacker_types
+                                       self.game.num_attacker_types
         self.num_attacker_types = 1
         self.attacker_type_probability = np.array([1])
 
         # generate pure strategy tuples
         self.attacker_pure_strategy_tuples = \
             list(itertools.product(*[range(self.game.num_attacker_strategies)
-                                for i in range(self.game.num_attacker_types)]))
+                                     for i in range(self.game.num_attacker_types)]))
 
         # initiate new defender and attacker payoff matrices
         self.defender_payoffs = np.zeros((self.num_defender_strategies,
@@ -251,10 +252,10 @@ class NormalFormGame:
 
         for l in range(self.game.num_attacker_types):
             payoff_defender += \
-            self.game.defender_payoffs[i, pure_strat[l], l] * \
+                self.game.defender_payoffs[i, pure_strat[l], l] * \
                 self.game.attacker_type_probability[l]
             payoff_attacker += \
-            self.game.attacker_payoffs[i, pure_strat[l], l] * \
+                self.game.attacker_payoffs[i, pure_strat[l], l] * \
                 self.game.attacker_type_probability[l]
 
         return (payoff_defender, payoff_attacker)
@@ -263,10 +264,10 @@ class NormalFormGame:
         """
         Make a partial game out of game and attacker_types.
         """
-        self.defender_payoffs = self.game.defender_payoffs[:,:,
-                                                    list(self.attacker_types)]
-        self.attacker_payoffs = self.game.attacker_payoffs[:,:,
-                                                    list(self.attacker_types)]
+        self.defender_payoffs = self.game.defender_payoffs[:, :,
+                                list(self.attacker_types)]
+        self.attacker_payoffs = self.game.attacker_payoffs[:, :,
+                                list(self.attacker_types)]
 
         self.num_defender_strategies = self.game.num_defender_strategies
         self.num_attacker_strategies = self.game.num_attacker_strategies
@@ -292,6 +293,7 @@ class SecurityGame:
     utilities for the attacker, whilst uncovered targets yield negative
     utilities for the defender and positive utilities for the attacker.
     """
+
     def __init__(self, **kwargs):
         if "partial_game_from" in kwargs.keys():
             self.game = kwargs['partial_game_from']
@@ -309,6 +311,13 @@ class SecurityGame:
             self.attacker_type_probability = np.zeros((self.num_attacker_types))
             self.attacker_type_probability += (1.0 / self.num_attacker_types)
 
+        if 'attacker_payoffs' in kwargs.keys():
+            self.attacker_uncovered = kwargs['attacker_payoffs'][0]
+            self.attacker_covered = kwargs['attacker_payoffs'][1]
+            self.defender_uncovered = kwargs['defender_payoffs'][0]
+            self.defender_covered = kwargs['defender_payoffs'][1]
+
+        else:
             # generate two arrays of random floats for defender and attacker
             attacker_random = np.random.rand(2,
                                              self.num_targets,
@@ -319,13 +328,13 @@ class SecurityGame:
 
             # for attacker uncovered targets yield positive utilities, and covered
             # yields negative utilities.
-            self.attacker_uncovered = attacker_random[0,:,:] * 100
-            self.attacker_covered = attacker_random[1,:,:] * -100
+            self.attacker_uncovered = attacker_random[0, :, :] * 100
+            self.attacker_covered = attacker_random[1, :, :] * -100
 
             # for defender uncovered targets yield negative utilities, and covered
             # targets yield positive utilities.
-            self.defender_uncovered = defender_randoms[0,:,:] * -100
-            self.defender_covered = defender_randoms[1,:,:] * 100
+            self.defender_uncovered = defender_randoms[0, :, :] * -100
+            self.defender_covered = defender_randoms[1, :, :] * 100
 
         # store the type of this representation
         self.type = "compact"
@@ -336,13 +345,13 @@ class SecurityGame:
         """
         # get payoffs
         self.defender_uncovered = self.game.defender_uncovered[:,
-                                                    list(self.attacker_types)]
+                                  list(self.attacker_types)]
         self.defender_covered = self.game.defender_covered[:,
-                                                    list(self.attacker_types)]
+                                list(self.attacker_types)]
         self.attacker_uncovered = self.game.attacker_uncovered[:,
-                                                    list(self.attacker_types)]
+                                  list(self.attacker_types)]
         self.attacker_covered = self.game.attacker_covered[:,
-                                                    list(self.attacker_types)]
+                                list(self.attacker_types)]
         # get compact values
         self.max_coverage = self.game.max_coverage
         self.num_targets = self.game.num_targets
